@@ -1,10 +1,13 @@
 const express = require('express')
 const { request, response } = require('express')
 const morgan = require('morgan')
-
+const cors = require('cors')
 const app = express()
 
+app.use(cors())
+app.use(express.static('build'))
 morgan.token('body', function (req,res) {return JSON.stringify(req.body)})
+
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
@@ -68,6 +71,29 @@ app.delete('/api/persons/:id', (req,res) => {
 
     res.status(204).end()
 })
+
+app.put('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    const body = req.body
+
+    let person = persons.find(p => p.id === id)
+
+    const newPerson = {
+        name: body.name || person.name,
+        num: body.num || person.num,
+        id: id
+    }
+
+    if (person === newPerson) {
+        return res.status(400).json({
+            error: 'nothing changed compared to old person'
+        })
+    }
+    persons = persons.filter(p => p.id !== id)
+    persons = persons.concat(newPerson)
+    res.json(newPerson)
+})
+
 
 app.post('/api/persons', (req, res) => {
     const body = req.body
