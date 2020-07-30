@@ -4,7 +4,7 @@ const morgan = require('morgan')
 
 const app = express()
 
-
+morgan.token('body', function (req,res) {return JSON.stringify(req.body)})
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
@@ -71,7 +71,6 @@ app.delete('/api/persons/:id', (req,res) => {
 
 app.post('/api/persons', (req, res) => {
     const body = req.body
-    morgan.token('body', function (req,res) {return JSON.stringify(req.body)})
     if(!body.name || !body.num) {
         return res.status(400).json({
             error: 'must include name & num'
