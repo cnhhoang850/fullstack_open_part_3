@@ -85,18 +85,14 @@ app.post('/api/persons', (req, res) => {
         return res.status(400).json({
             error: 'must include name & num'
         })
-    } else if (persons.find(p => p.name === body.name)) {
-        return res.status(400).json({
-        error: 'person already in phonebook'})
-    }
-
+    } 
     const newPerson = new Person({
         name: body.name,
         num: body.num
     })
 
     newPerson.save()
-        .then(response =>res.json(response.toJSON()) )
+        .then(response => res.json(response.toJSON()) )
         .catch(error => next(error))
 })
 
